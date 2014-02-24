@@ -76,7 +76,17 @@ module LanguagePack
     private
     def gemfile
       ruby_version = @bundler.ruby_version
-      return ruby_version.to_s
+      parts = [
+        "ruby",
+        ruby_version.version
+      ]
+      parts << "p#{ruby_version.patchlevel}" if ruby_version.patchlevel
+      unless ruby_version.engine == "ruby"
+        parts << ruby_version.engine
+        parts << ruby_version.engine_version
+      end
+
+      parts.compact.join("-")
     end
 
     def none
@@ -96,7 +106,7 @@ module LanguagePack
         @version = none
       else
         @set     = :gemfile
-        @version = bundler_output.sub('(', '').sub(')', '').split.join('-')
+        @version = gemfile
       end
     end
 
